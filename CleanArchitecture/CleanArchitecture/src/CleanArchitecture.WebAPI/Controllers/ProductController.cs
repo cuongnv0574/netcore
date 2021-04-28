@@ -3,44 +3,51 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using CleanArchitecture.Application.DatabaseServices;
 using CleanArchitecture.Application.Models;
+using CleanArchitecture.Application.Models.RequestModels;
+using CleanArchitecture.Application.Models.ResponseModels;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CleanArchitecture.WebAPI.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
-    public class ProductController : ControllerBase
+    public class ProductsController : CustomBaseApiController
     {
-        private readonly IProductService _productService;
-        public ProductController(IProductService productService)
+        public ProductsController(IMediator mediator) : base(mediator)
         {
-            _productService = productService;
+
         }
 
-        // We can update search criteria later
-        [HttpGet]
-        public async Task<IEnumerable<Product>> Get()
+        // GET api/values/5
+        [HttpGet("{id}")]
+        public string Get(int id)
         {
-            var result = await _productService.FetchProduct();
-            return result;
+            return "value";
         }
 
-        
-        // POST
+        //public async Task<IEnumerable<ProductQueryResponseModel>> Get()
+        //{
+        //    var query = new FetchProductQuery();
+        //    return await Mediator.Send(query);
+        //}
+
+        // POST api/values
         [HttpPost]
-        public async Task<ActionResult<bool>> Post(Product model)
+        public async Task<ActionResult<bool>> Post(ProductCommand command)
         {
-            var result = await _productService.CreateProduct(model);
-            return result;
+            return await Mediator.Send(command);
         }
 
-
-        // DELETE 
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<bool>> Delete(Guid id)
+        // PUT api/values/5
+        [HttpPut("{id}")]
+        public void Put(int id, [FromBody] string value)
         {
-            var result = await _productService.DeleteProduct(id);
-            return result;
+        }
+
+        // DELETE api/values/5
+        [HttpDelete("{id}")]
+        public void Delete(int id)
+        {
         }
     }
 }
