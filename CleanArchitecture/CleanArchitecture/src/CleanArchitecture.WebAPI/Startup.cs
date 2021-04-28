@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using CleanArchitecture.Infrastructure;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -34,8 +36,6 @@ namespace CleanArchitecture.WebAPI
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Product API", Version = "v1" });
             });
-
-           
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

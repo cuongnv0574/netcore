@@ -13,9 +13,11 @@ namespace CleanArchitecture.WebAPI.Controllers
     [Route("api/[controller]")]
     public class ProductsController : CustomBaseApiController
     {
+        private readonly IMediator _mediator;
+
         public ProductsController(IMediator mediator) : base(mediator)
         {
-
+            _mediator = mediator;
         }
 
         // GET api/values/5
@@ -25,11 +27,12 @@ namespace CleanArchitecture.WebAPI.Controllers
             return "value";
         }
 
-        //public async Task<IEnumerable<ProductQueryResponseModel>> Get()
-        //{
-        //    var query = new FetchProductQuery();
-        //    return await Mediator.Send(query);
-        //}
+        [HttpGet]
+        public async Task<IEnumerable<ProductQueryResponseModel>> Get()
+        {
+            var query = new FetchProductQuery();
+            return await Mediator.Send(query);
+        }
 
         // POST api/values
         [HttpPost]
@@ -45,9 +48,9 @@ namespace CleanArchitecture.WebAPI.Controllers
         }
 
         // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
+        //[HttpDelete("{id}")]
+        //public void Delete(int id)
+        //{
+        //}
     }
 }

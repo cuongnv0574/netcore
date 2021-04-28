@@ -11,8 +11,10 @@ namespace CleanArchitecture.Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
-           
+
             services.AddMediatR(Assembly.GetExecutingAssembly());
+            services.AddTransient<IProductService, ProductService>();
+            services.AddTransient<IProductTypeService, ProductTypeService>();
             services.AddTransient<IDatabaseConnectionFactory>(e =>
             {
                 return new SqlConnectionFactory(configuration["ConnectionStrings:ProductDatabase"]);

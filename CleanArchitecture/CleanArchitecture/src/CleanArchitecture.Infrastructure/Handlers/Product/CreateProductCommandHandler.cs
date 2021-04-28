@@ -13,14 +13,15 @@ namespace CleanArchitecture.Application.Handlers
     public class CreateProductCommandHandler : IRequestHandler<ProductCommand, bool>
     {
         public readonly IProductService _productService;
-    
-        public CreateProductCommandHandler(IProductService productService) 
+
+        public CreateProductCommandHandler(IProductService productService)
         {
             _productService = productService;
         }
 
         public async Task<bool> Handle(ProductCommand request, CancellationToken cancellationToken)
         {
+
             var result = await _productService.CreateProduct(request);
             return result;
         }

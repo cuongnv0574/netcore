@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using System.Linq;
 using SqlKata.Execution;
 using SqlKata.Compilers;
+using CleanArchitecture.Application.Models.RequestModels;
+using CleanArchitecture.Application.Models.ResponseModels;
 
 namespace CleanArchitecture.Infrastructure.DatabaseServices
 {
@@ -19,13 +21,14 @@ namespace CleanArchitecture.Infrastructure.DatabaseServices
             _database = database;
         }
 
-        public async Task<bool> CreateProductType(ProductType request)
+        public async Task<bool> CreateProductType(ProductTypeCommand request)
         {
+           
             using var conn = await _database.CreateConnectionAsync();
             var db = new QueryFactory(conn, new SqlServerCompiler());
 
-            //if (!await IsProductTypeKeyUnique(db, request.Name, Guid.Empty))
-            //    return false;
+            if (!await IsProductTypeKeyUnique(db, request.ProductTypeKey, Guid.Empty))
+                return false;
 
             var affectedRecords = await db.Query("ProductType").InsertAsync(new
             {
@@ -36,26 +39,13 @@ namespace CleanArchitecture.Infrastructure.DatabaseServices
                 CreatedDate = DateTime.UtcNow,
                 UpdatedUser = Guid.NewGuid()
             });
-            //var parameters = new
-            //{
-            //    Id = Guid.NewGuid(),
-            //    Name = request.Name,
-            //    RecordStatus = request.Status,
-            //    CreatedDate = DateTime.UtcNow,
-            //    UpdatedUser = Guid.NewGuid()
-            //};
-            //var affectedRecords = await conn.ExecuteAsync("INSERT INTO ProductType(ProductTypeID, ProductTypeKey, ProductTypeName, RecordStatus,CreatedDate, UpdatedUser) " +
-            //    "VALUES(@ProductTypeID, @ProductTypeKey, @ProductTypeName, @RecordStatus, @CreatedDate, @UpdatedUser)",
-            //    parameters);
+           
             return affectedRecords > 0;
         }
 
         public async Task<bool> DeleteProductType(Guid productTypeId)
         {
             using var conn = await _database.CreateConnectionAsync();
-            //var db = new QueryFactory(conn, new SqlServerCompiler());
-            //var affectedRecord = await db.Query("ProductType").Where("ProductTypeID", "=", productTypeId).DeleteAsync();
-
             var parameters = new
             {
                 ProductTypeID = productTypeId
@@ -65,21 +55,17 @@ namespace CleanArchitecture.Infrastructure.DatabaseServices
             return affectedRecords > 0;
         }
 
-        public async Task<IEnumerable<ProductType>> FetchProductType()
+        public async Task<IEnumerable<ProductTypeQueryResponseModel>> FetchProductType()
         {
             using var conn = await _database.CreateConnectionAsync();
-            //var db = new QueryFactory(conn, new SqlServerCompiler());
-            //var result = db.Query("ProductType");
-            //return await result.GetAsync<ProductTypeResponseModel>();
-
-            var result = conn.Query<ProductType>("Select * from ProductType").ToList();
+            var result = conn.Query<ProductTypeQueryResponseModel>("Select * from ProductType").ToList();
             return result;
         }
 
         private async Task<bool> IsProductTypeKeyUnique(QueryFactory db, string productTypeKey, Guid productTypeID)
         {
             var result = await db.Query("ProductType").Where("ProductTypeKey", "=", productTypeKey)
-                .FirstOrDefaultAsync<ProductType>();
+                .FirstOrDefaultAsync<ProductTypeResponseModel>();
 
             if (result == null)
                 return true;
